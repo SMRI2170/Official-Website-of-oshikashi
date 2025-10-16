@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推し歌詞 - あなただけの歌詞カードを持ち歩こう</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #F9FAFB; /* bg-gray-50 */
+            color: #111827; /* bg-gray-900 */
+            overscroll-behavior: none;
+        }
+        .bg-primary { background-color: #9333ea; } /* purple-600 */
+        .text-primary { color: #9333ea; }
+        .bg-primary-gradient {
+            background-image: linear-gradient(to right, #a855f7, #9333ea); /* purple-500 to purple-600 */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* --- Hero Section Background --- */
+        .hero-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 50% 30%, rgba(147, 51, 234, 0.1), transparent 60%);
+            opacity: 0;
+            transform: scale(0.8);
+            z-index: -1;
+        }
+
+        /* --- Horizontal Scroll Section --- */
+        #horizontal-scroll-section {
+            background-color: #111827; /* bg-gray-900 */
+            color: #f9fafb; /* bg-gray-50 */
+            overflow: hidden;
+        }
+        .horizontal-track {
+            display: flex;
+            align-items: center;
+            padding: 0 calc(50vw - 150px); 
+            width: max-content;
+        }
+        .track-item {
+            flex-shrink: 0;
+            padding: 0 4vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .phone-slide {
+            width: 200px;
+            aspect-ratio: 320 / 650;
+            position: relative;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+        .text-block {
+            width: 300px;
+        }
+        .phone-mockup {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1c1c1c;
+            border-radius: 30px;
+            border: 8px solid #1c1c1c;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 22px;
+            overflow: hidden;
+        }
+        .phone-screen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: #f5f5f7;
+        }
+
+        /* Initial state for animations */
+        .gsap-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                </svg>
+                <h1 class="text-2xl font-bold text-primary">推し歌詞</h1>
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#concept" class="text-gray-600 hover:text-primary transition">コンセプト</a>
+                <a href="#download" class="text-gray-600 hover:text-primary transition">ダウンロード</a>
+            </nav>
+            <a href="#download" class="hidden md:block bg-primary-gradient text-white px-5 py-2 rounded-full font-bold hover:opacity-90 transition shadow-md">
+                アプリを入手
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="py-24 md:py-40 relative hero-background overflow-hidden">
+            <div class="container mx-auto px-6">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2 lg:w-3/5 text-center md:text-left">
+                        <h2 class="text-5xl md:text-7xl font-black tracking-tight gsap-reveal">好きな歌詞を、<br>いつでもあなたの手の中に。</h2>
+                        <p class="mt-8 text-lg md:text-xl text-gray-600 max-w-xl mx-auto md:mx-0 gsap-reveal">
+                            お気に入りの歌詞を保存・整理して、いつでも見返せる。<br>
+                            あなただけのオリジナル歌詞カードを作成できるアプリです。
+                        </p>
+                        <div class="mt-10 gsap-reveal">
+                            <a href="#download" class="bg-primary-gradient text-white px-10 py-4 rounded-full text-lg font-bold hover:opacity-90 transition-transform transform hover:scale-105 shadow-xl inline-block">
+                                無料でダウンロード
+                            </a>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2 lg:w-2/5 flex justify-center">
+                         <div class="relative w-[280px] aspect-[320/650] gsap-reveal">
+                            <div class="phone-mockup">
+                                <div class="phone-screen">
+                                    <img src="screen-lyrics-view.png" alt="推し歌詞 アプリ画面" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="concept" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold gsap-reveal">音楽体験を、<br>もっとパーソナルに。</h2>
+                    <p class="mt-8 text-gray-600 text-lg leading-relaxed gsap-reveal">
+                        「推し歌詞」は、音楽を聴くだけでなく、歌詞の世界に深く浸るためのアプリです。<br class="hidden sm:block">
+                        お気に入りのフレーズを記録したり、自分だけのプレイリストを作ったり。<br><br>
+                        <span class="font-bold text-primary">ホーム画面ウィジェット</span>に対応し、<br class="hidden sm:block">
+                        いつでも好きな歌詞を眺めることができます。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="horizontal-scroll-section" class="h-[300vh] relative">
+            <div class="sticky top-0 h-screen w-full flex flex-col justify-center">
+                <div class="w-full max-w-4xl mx-auto text-center px-6 mb-16">
+                    <h2 class="text-4xl md:text-5xl font-bold gsap-reveal">あなただけの特別な歌詞カードを。</h2>
+                    <p class="text-gray-400 mt-4 text-lg gsap-reveal">シンプルな操作で歌詞を管理し、背景画像やテーマをカスタマイズ。<br class="hidden sm:block">あなただけの特別なアプリ体験を。</p>
+                </div>
+                <div class="horizontal-track">
+                    <div class="track-item">
+                        <div class="text-block">
+                            <h3 class="text-2xl font-semibold">歌詞を、手軽に管理。</h3>
+                            <p class="text-gray-400 mt-2">好きな曲の歌詞を簡単に追加・編集。<br>いつでもすぐに見返せます。</p>
+                        </div>
+                    </div>
+                    <div class="track-item">
+                        <div class="phone-slide"><div class="phone-mockup"><div class="phone-screen"><img src="screen-lyrics-list.png" alt="歌詞一覧画面"></div></div></div>
+                    </div>
+                    <div class="track-item">
+                        <div class="phone-slide"><div class="phone-mockup"><div class="phone-screen"><img src="screen-lyrics-edit.png" alt="歌詞編集画面"></div></div></div>
+                    </div>
+                    <div class="track-item">
+                         <div class="text-block">
+                            <h3 class="text-2xl font-semibold">プレイリストで、世界観を表現。</h3>
+                            <p class="text-gray-400 mt-2">気分やテーマに合わせて、自分だけの歌詞プレイリストを作成。カバー画像も設定できます。</p>
+                        </div>
+                    </div>
+                    <div class="track-item">
+                        <div class="phone-slide"><div class="phone-mockup"><div class="phone-screen"><img src="screen-playlist.png" alt="プレイリスト画面"></div></div></div>
+                    </div>
+                     <div class="track-item">
+                        <div class="phone-slide"><div class="phone-mockup"><div class="phone-screen"><img src="screen-custom-bg.png" alt="背景カスタマイズ画面"></div></div></div>
+                    </div>
+                    <div class="track-item">
+                        <div class="text-block">
+                           <h3 class="text-2xl font-semibold">ホーム画面を、推しで彩る。</h3>
+                           <p class="text-gray-400 mt-2">ホーム画面ウィジェットに対応。<br>お気に入りの歌詞をいつでもホームに表示できます。</p>
+                        </div>
+                    </div>
+                    <div class="track-item">
+                        <div class="phone-slide"><div class="phone-mockup"><div class="phone-screen"><img src="screen-widget-preview.png" alt="ホーム画面ウィジェット"></div></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="download" class="py-24 bg-gray-50">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-4xl md:text-5xl font-bold gsap-reveal">さあ、あなただけの<br>歌詞カードを作ろう。</h2>
+                <p class="text-gray-600 mt-6 max-w-2xl mx-auto gsap-reveal">ダウンロードは無料。<br>音楽との毎日を、もっと色鮮やかに記録しませんか。</p>
+                <div class="mt-10 flex flex-col sm:flex-row justify-center items-center gap-6 gsap-reveal">
+                    <a href="#" target="_blank" class="inline-block h-14">
+                        <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" class="h-full w-auto">
+                    </a>
+                    <a href="#" target="_blank" class="inline-block h-14">
+                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/ja_badge_web_generic.png" alt="Get it on Google Play" class="h-full w-auto object-contain">
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center sm:text-left">
+                <div class="md:col-span-2">
+                    <h3 class="font-bold text-lg text-white">推し歌詞</h3>
+                    <p class="mt-2 text-gray-400 text-sm">あなたの音楽体験を、もっと豊かに。</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-white">ナビゲーション</h3>
+                    <ul class="mt-2 space-y-2 text-sm">
+                        <li><a href="index.html#concept" class="text-gray-400 hover:text-white">コンセプト</a></li>
+                        <li><a href="index.html#download" class="text-gray-400 hover:text-white">ダウンロード</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-white">リーガル</h3>
+                    <ul class="mt-2 space-y-2 text-sm">
+                        <li><a href="privacy.html" class="text-gray-400 hover:text-white">プライバシーポリシー</a></li>
+                        <li><a href="terms.html" class="text-gray-400 hover:text-white">利用規約</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
+                <p>&copy; <span id="year"></span> 推し歌詞. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // --- General Reveal Animation ---
+            gsap.utils.toArray('.gsap-reveal').forEach(el => {
+                gsap.fromTo(el, 
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1.2,
+                        ease: 'power4.out',
+                        scrollTrigger: {
+                            trigger: el,
+                            start: 'top 90%',
+                            toggleActions: 'play none none none',
+                        }
+                    }
+                );
+            });
+
+            // --- Hero Section Animations ---
+            gsap.fromTo('.hero-background::before', 
+                { opacity: 0, scale: 0.8 }, 
+                { opacity: 1, scale: 1, duration: 1.5, ease: 'power3.out' }
+            );
+
+            // --- Horizontal Scroll Animation ---
+            const track = document.querySelector('.horizontal-track');
+            if (track) {
+                const items = gsap.utils.toArray('.track-item');
+                gsap.to(track, {
+                    x: () => -(track.scrollWidth - window.innerWidth),
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: "#horizontal-scroll-section",
+                        pin: true,
+                        scrub: 1,
+                        end: () => "+=" + (track.scrollWidth - window.innerWidth),
+                        onUpdate: (self) => {
+                            items.forEach(item => {
+                                const phone = item.querySelector('.phone-slide');
+                                if (!phone) return;
+
+                                const rect = item.getBoundingClientRect();
+                                const dist = Math.abs(rect.left + rect.width / 2 - window.innerWidth / 2);
+                                const scale = gsap.utils.mapRange(0, window.innerWidth / 2, 1.1, 0.85, dist);
+                                const opacity = gsap.utils.mapRange(window.innerWidth / 4, window.innerWidth / 2, 1, 0.5, dist);
+                                gsap.to(phone, { scale: scale, opacity: opacity, duration: 0.3, ease: 'power2.out' });
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Footer year
+            document.getElementById('year').textContent = new Date().getFullYear();
+        });
+    </script>
+
+</body>
+</html>
